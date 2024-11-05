@@ -126,8 +126,44 @@ searchForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Add these at the top with your other constants
+const themeToggle = document.getElementById('theme-toggle');
+const rootElement = document.documentElement;
+
+// Function to toggle theme
+function toggleTheme() {
+    const currentTheme = rootElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    // Update theme attribute
+    rootElement.setAttribute('data-theme', newTheme);
+    
+    // Update toggle button icon
+    const icon = themeToggle.querySelector('i');
+    icon.classList.remove(newTheme === 'light' ? 'fa-sun' : 'fa-moon');
+    icon.classList.add(newTheme === 'light' ? 'fa-moon' : 'fa-sun');
+    
+    // Save preference to localStorage
+    localStorage.setItem('movieflix-theme', newTheme);
+}
+
+// Function to initialize theme
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('movieflix-theme');
+    if (savedTheme) {
+        rootElement.setAttribute('data-theme', savedTheme);
+        const icon = themeToggle.querySelector('i');
+        icon.classList.remove(savedTheme === 'light' ? 'fa-moon' : 'fa-sun');
+        icon.classList.add(savedTheme === 'light' ? 'fa-sun' : 'fa-moon');
+    }
+}
+
+// Add event listener for theme toggle
+themeToggle.addEventListener('click', toggleTheme);
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme(); // Initialize theme
     loadPopularMovies();
-    updateFavoritesSection(); // Show any existing favorites
+    updateFavoritesSection();
 });
