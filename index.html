@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1 class="logo">MovieFlix</h1>
+        <form id="search-form">
+            <input type="text" id="search" placeholder="Search for movies...">
+        </form>
+    </header>
+
+    <section class="category-section" id="favorites-section" style="display: none;">
+        <h2>My Favorites</h2>
+        <div class="movies-grid" id="favorite-movies"></div>
+    </section>
+
+    <main class="movies-grid" id="movies-grid">
+        <!-- Movies will be inserted here -->
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html> 
