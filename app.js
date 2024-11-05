@@ -12,6 +12,37 @@ const favoriteMoviesGrid = document.getElementById('favorite-movies');
 // Initialize favorites from localStorage
 let favorites = JSON.parse(localStorage.getItem('movieflix-favorites')) || [];
 
+// Function to save favorites to localStorage
+function saveFavorites() {
+    localStorage.setItem('movieflix-favorites', JSON.stringify(favorites));
+}
+
+// Function to toggle favorite status
+function toggleFavorite(movie) {
+    const index = favorites.findIndex(favMovie => favMovie.id === movie.id);
+    
+    if (index === -1) {
+        // Add to favorites
+        favorites.push(movie);
+    } else {
+        // Remove from favorites
+        favorites.splice(index, 1);
+    }
+    
+    // Save to localStorage
+    saveFavorites();
+    
+    // Update UI
+    displayMovies(favorites, favoriteMoviesGrid);
+    loadPopularMovies(); // Refresh main grid to update favorite buttons
+    updateFavoritesSection();
+}
+
+// Function to check if a movie is favorited
+function isFavorited(movieId) {
+    return favorites.some(movie => movie.id === movieId);
+}
+
 // Fetch movies
 async function fetchMovies(url) {
     try {
@@ -36,11 +67,11 @@ function displayMovies(movies, container) {
             ? IMAGE_BASE_URL + movie.poster_path 
             : 'https://via.placeholder.com/300x450?text=No+Poster';
 
-        const isFavorite = favorites.some(favMovie => favMovie.id === movie.id);
+        const isFavorite = isFavorited(movie.id);
 
         movieCard.innerHTML = `
             <img src="${movieImage}" alt="${movie.title}">
-            <button class="favorite-btn ${isFavorite ? 'active' : ''}" title="Add to favorites">
+            <button class="favorite-btn ${isFavorite ? 'active' : ''}" title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
                 <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i>
             </button>
             <div class="movie-info">
@@ -52,31 +83,18 @@ function displayMovies(movies, container) {
         // Add favorite button click handler
         const favoriteBtn = movieCard.querySelector('.favorite-btn');
         favoriteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevent card click event
             toggleFavorite(movie);
+            
+            // Update button appearance immediately
+            favoriteBtn.classList.toggle('active');
+            const icon = favoriteBtn.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
         });
         
         container.appendChild(movieCard);
     });
-}
-
-// Toggle favorite status
-function toggleFavorite(movie) {
-    const index = favorites.findIndex(favMovie => favMovie.id === movie.id);
-    
-    if (index === -1) {
-        favorites.push(movie);
-    } else {
-        favorites.splice(index, 1);
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('movieflix-favorites', JSON.stringify(favorites));
-    
-    // Update UI
-    displayMovies(favorites, favoriteMoviesGrid);
-    loadPopularMovies(); // Refresh main grid to update favorite buttons
-    updateFavoritesSection();
 }
 
 // Update favorites section visibility
@@ -111,5 +129,5 @@ searchForm.addEventListener('submit', async (e) => {
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     loadPopularMovies();
-    updateFavoritesSection();
+    updateFavoritesSection(); // Show any existing favorites
 });
