@@ -43,12 +43,20 @@ function isFavorited(movieId) {
     return favorites.some(movie => movie.id === movieId);
 }
 
-// Fetch movies
+// Add these variables at the top
+let currentPage = 1;
+const totalPages = 3; // You can adjust this number to load more pages
+
+// Update the fetchMovies function to handle pagination
 async function fetchMovies(url) {
     try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data.results;
+        let allMovies = [];
+        for(let page = 1; page <= totalPages; page++) {
+            const response = await fetch(`${url}&page=${page}`);
+            const data = await response.json();
+            allMovies = [...allMovies, ...data.results];
+        }
+        return allMovies;
     } catch (error) {
         console.error('Error fetching movies:', error);
         return [];
@@ -107,20 +115,20 @@ function updateFavoritesSection() {
     }
 }
 
-// Load popular movies
+// Update loadPopularMovies function
 async function loadPopularMovies() {
-    const url = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+    const url = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US`;
     const movies = await fetchMovies(url);
     displayMovies(movies, moviesGrid);
 }
 
-// Handle search
+// Update search handler to include pagination
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const searchTerm = searchInput.value.trim();
     
     if (searchTerm) {
-        const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}&page=1`;
+        const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}`;
         const movies = await fetchMovies(url);
         displayMovies(movies, moviesGrid);
     }
